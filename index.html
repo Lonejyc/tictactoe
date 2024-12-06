@@ -49,10 +49,10 @@
     document.querySelector('.find').addEventListener('click', () => {
         name = document.querySelector('#name').value;
         document.querySelector('.user').innerText = name;
-        if(name === '') {
+        if (name === '') {
             alert('Please enter a name');
         } else {
-            socket.emit('find', {name: name});
+            socket.emit('find', { name: name });
             document.querySelector('.find').disabled = true;
         }
     });
@@ -67,27 +67,33 @@
             document.querySelector('.nameDiv').style.display = 'none';
             document.querySelector('.find').style.display = 'none';
             document.querySelector('.whosTurn').style.display = 'block';
-            document.querySelector('.whosTurn').innerText =  "X's Turn";
+            document.querySelector('.whosTurn').innerText = "X's Turn";
         };
 
         let oppName;
         let value;
 
-        const foundObject=allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
+        const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
 
         foundObject.p1.p1name == `${name}` ? oppName = foundObject.p2.p2name : oppName = foundObject.p1.p1name;
         foundObject.p1.p1name == `${name}` ? value = foundObject.p1.p1value : value = foundObject.p2.p2value;
 
-        document.querySelector('.opp').innerText = oppName; 
+        document.querySelector('.opp').innerText = oppName;
         document.querySelector('.value').innerText = value;
     });
 
     document.querySelectorAll('.btn').forEach(e => {
         e.addEventListener('click', () => {
             let value = document.querySelector('.value').innerText;
-            e.innerText = value;
+            let whosTurn = document.querySelector('.whosTurn').innerText;
 
-            socket.emit('playing', { value: value, id: e.id, name: name });
+            // Vérifier si c'est le tour du joueur
+            if ((value === 'X' && whosTurn === "X's Turn") || (value === 'O' && whosTurn === "O's Turn")) {
+                e.innerText = value;
+                socket.emit('playing', { value: value, id: e.id, name: name });
+            } else {
+                alert("Ce n'est pas votre tour !");
+            }
         });
     });
 

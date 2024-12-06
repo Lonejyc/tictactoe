@@ -30,16 +30,17 @@ io.on('connection', (socket) => {
                          p2move: ""
                     }
 
-                    let obj ={
+                    let obj = {
                          p1: p1obj,
                          p2: p2obj,
-                         sum: 1
+                         sum: 1,
+                         turn: 'X' // Ajout de la propriété turn
                     }
                     playingArray.push(obj);
 
-                    arr.splice(0,2);
+                    arr.splice(0, 2);
 
-                    io.emit('find', {allPlayers: playingArray});
+                    io.emit('find', { allPlayers: playingArray });
                }
           }
      });
@@ -48,32 +49,30 @@ io.on('connection', (socket) => {
           console.log('Received playing event:', e);
           let objToChange;
           if (e.value == 'X') {
-              objToChange = playingArray.find(obj => obj.p1.p1name === e.name);
-              console.log(playingArray);
-              console.log('Found objToChange for X:', objToChange);
-              if (objToChange) {
-                  objToChange.p1.p1move = e.id;
-                  objToChange.sum++;
-              }
+               objToChange = playingArray.find(obj => obj.p1.p1name === e.name);
+               if (objToChange && objToChange.turn === 'X') {
+                    objToChange.p1.p1move = e.id;
+                    objToChange.sum++;
+                    objToChange.turn = 'O'; // Changer le tour
+               }
           } else if (e.value == 'O') {
                objToChange = playingArray.find(obj => obj.p2.p2name === e.name);
-               console.log(playingArray);
-              console.log('Found objToChange for O:', objToChange);
-              if (objToChange) {
-                  objToChange.p2.p2move = e.id;
-                  objToChange.sum++;
-              }
+               if (objToChange && objToChange.turn === 'O') {
+                    objToChange.p2.p2move = e.id;
+                    objToChange.sum++;
+                    objToChange.turn = 'X'; // Changer le tour
+               }
           }
-      
+
           if (objToChange) {
-              io.emit('playing', {allPlayers: playingArray});
+               io.emit('playing', { allPlayers: playingArray });
           } else {
-              console.error('objToChange not found for event:', e);
+               console.error('objToChange not found or not the correct turn for event:', e);
           }
      });
 
-     socket.on("gameOver",(e) => {
-          playingArray=playingArray.filter(obj=>obj.p1.p1name!==e.name);
+     socket.on("gameOver", (e) => {
+          playingArray = playingArray.filter(obj => obj.p1.p1name !== e.name);
      });
 });
 
