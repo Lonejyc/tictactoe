@@ -46,16 +46,19 @@
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    // Masquer initialement plusieurs éléments de la page
     document.querySelector('.bigCont').style.display = 'none';
     document.querySelector('.userCont').style.display = 'none';
     document.querySelector('.oppCont').style.display = 'none';
     document.querySelector('.valueCont').style.display = 'none';
     document.querySelector('.whosTurn').style.display = 'none';
 
+    // Initialiser la connexion socket
     const socket = io();
 
     let name;
 
+    // Ajouter un écouteur d'événement pour le bouton "find"
     document.querySelector('.find').addEventListener('click', () => {
         name = document.querySelector('#name').value;
         document.querySelector('.user').innerText = name;
@@ -67,9 +70,11 @@
         }
     });
 
+    // Réception de l'événement "find" du serveur
     socket.on('find', (e) => {
         let allPlayersArray = e.allPlayers;
         if (name != '') {
+            // Afficher les éléments de jeu et masquer les éléments de saisie
             document.querySelector('.userCont').style.display = 'block';
             document.querySelector('.oppCont').style.display = 'block';
             document.querySelector('.valueCont').style.display = 'block';
@@ -82,18 +87,19 @@
             document.querySelector('.toggleChat').classList.remove('hidden'); // Afficher le bouton de bascule
         };
 
+        // Trouver l'adversaire et la valeur du joueur
         let oppName;
         let value;
-
         const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
-
         foundObject.p1.p1name == `${name}` ? oppName = foundObject.p2.p2name : oppName = foundObject.p1.p1name;
         foundObject.p1.p1name == `${name}` ? value = foundObject.p1.p1value : value = foundObject.p2.p2value;
 
+        // Afficher les informations de l'adversaire et la valeur du joueur
         document.querySelector('.opp').innerText = oppName;
         document.querySelector('.value').innerText = value;
     });
 
+    // Ajouter des écouteurs d'événements pour les boutons de jeu
     document.querySelectorAll('.btn').forEach(e => {
         e.addEventListener('click', () => {
             let value = document.querySelector('.value').innerText;
@@ -109,18 +115,21 @@
         });
     });
 
+    // Réception de l'événement "playing" du serveur
     socket.on('playing', (e) => {
         const foundObject = (e.allPlayers).find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
 
         p1id = foundObject.p1.p1move;
         p2id = foundObject.p2.p2move;
 
+        // Mettre à jour l'affichage du tour
         if ((foundObject.sum) % 2 == 0) {
             document.querySelector('.whosTurn').innerText = "O's Turn";
         } else {
             document.querySelector('.whosTurn').innerText = "X's Turn";
         }
 
+        // Mettre à jour l'affichage des mouvements des joueurs
         if (p1id != '') {
             document.getElementById(`${p1id}`).innerText = foundObject.p1.p1value;
             document.getElementById(`${p1id}`).disabled = true;
@@ -135,9 +144,11 @@
             document.getElementById(`${p2id}`).style.color = 'var(--secondary-color)';
         }
 
+        // Vérifier l'état du jeu
         check(name, foundObject.sum);
     });
 
+    // Réception des messages de chat
     socket.on('chatMessage', (msg) => {
         const chatMessages = document.querySelector('.chatMessages');
         const messageElement = document.createElement('p');
@@ -146,6 +157,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     });
 
+    // Envoyer un message de chat
     document.querySelector('.sendChat').addEventListener('click', () => {
         const chatInput = document.querySelector('.chatInput');
         const message = chatInput.value;
@@ -155,6 +167,7 @@
         }
     });
 
+    // Basculer l'affichage du chat
     document.querySelector('.toggleChat').addEventListener('click', () => {
         const chatCont = document.querySelector('.chatCont');
         const toggleChat = document.querySelector('.toggleChat');
@@ -162,6 +175,7 @@
         toggleChat.classList.toggle('active');
     });
 
+    // Fonction pour vérifier l'état du jeu
     function check(name, sum) {
         document.getElementById("btn1").innerText == '' ? b1 = "a" : b1 = document.getElementById("btn1").innerText;
         document.getElementById("btn2").innerText == '' ? b2 = "b" : b2 = document.getElementById("btn2").innerText;
@@ -173,6 +187,7 @@
         document.getElementById("btn8").innerText == '' ? b8 = "h" : b8 = document.getElementById("btn8").innerText;
         document.getElementById("btn9").innerText == '' ? b9 = "i" : b9 = document.getElementById("btn9").innerText;
 
+        // Vérifier les conditions de victoire ou d'égalité
         if ((b1 == b2 && b2 == b3) || (b4 == b5 && b5 == b6) || (b7 == b8 && b8 == b9) || (b1 == b4 && b4 == b7) || (b2 == b5 && b5 == b8) || (b3 == b6 && b6 == b9) || (b1 == b5 && b5 == b9) || (b3 == b5 && b5 == b7)) {
             socket.emit("gameOver", { name: name })
             setTimeout(() => {
@@ -181,9 +196,7 @@
                     location.reload()
                 }, 2000)
             }, 100)
-        }
-
-        else if (sum == 10) {
+        } else if (sum == 10) {
             socket.emit("gameOver", { name: name })
             setTimeout(() => {
                 alert("ÉGALITÉ!!")
