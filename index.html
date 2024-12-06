@@ -9,16 +9,26 @@
 <body>
     <h1>Tic <span class="redTxt">Tac</span> Toe</h1>
     <div class="usersCont">
-        <p class="userCont">You : <span class="user"></span></p>
-        <p class="oppCont">Opponent : <span class="opp"></span></p>
+        <p class="userCont">Vous : <span class="user"></span></p>
+        <p class="oppCont">Adversaire : <span class="opp"></span></p>
     </div>
-    <p class="valueCont">You are playing as <span class="value"></span></p>
+    <p class="valueCont">Vous jouez en tant que <span class="value"></span></p>
     <p class="whosTurn">X's Turn</p>
     <div class="nameDiv">
-        <p class="enterName">Enter your name : </p>
-        <input type="text" name="name" id="name" placeholder="Name" autocomplete="off">
+        <p class="enterName">Entrer votre prénom : </p>
+        <input type="text" name="name" id="name" placeholder="Pseudo" autocomplete="off">
     </div>
-    <button class="find">Search for a player</button>
+    <button class="find">Trouver un joueur</button>
+
+    <button class="toggleChat hidden">
+        <img src="/images/arrow.svg" alt="Arrow">
+    </button>
+
+    <div class="chatCont hidden">
+        <div class="chatMessages"></div>
+        <input type="text" class="chatInput" placeholder="Écrivez un message ...">
+        <button type="submit" class="sendChat">Envoyer</button>
+    </div>
 
     <div class="bigCont">
         <div class="cont">
@@ -50,7 +60,7 @@
         name = document.querySelector('#name').value;
         document.querySelector('.user').innerText = name;
         if (name === '') {
-            alert('Please enter a name');
+            alert('Entrer un pseudo');
         } else {
             socket.emit('find', { name: name });
             document.querySelector('.find').disabled = true;
@@ -68,6 +78,8 @@
             document.querySelector('.find').style.display = 'none';
             document.querySelector('.whosTurn').style.display = 'block';
             document.querySelector('.whosTurn').innerText = "X's Turn";
+            document.querySelector('.chatCont').classList.remove('hidden'); // Afficher le chat
+            document.querySelector('.toggleChat').classList.remove('hidden'); // Afficher le bouton de bascule
         };
 
         let oppName;
@@ -126,6 +138,30 @@
         check(name, foundObject.sum);
     });
 
+    socket.on('chatMessage', (msg) => {
+        const chatMessages = document.querySelector('.chatMessages');
+        const messageElement = document.createElement('p');
+        messageElement.innerText = `${msg.name}: ${msg.message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    document.querySelector('.sendChat').addEventListener('click', () => {
+        const chatInput = document.querySelector('.chatInput');
+        const message = chatInput.value;
+        if (message.trim() !== '') {
+            socket.emit('chatMessage', { name: name, message: message });
+            chatInput.value = '';
+        }
+    });
+
+    document.querySelector('.toggleChat').addEventListener('click', () => {
+        const chatCont = document.querySelector('.chatCont');
+        const toggleChat = document.querySelector('.toggleChat');
+        chatCont.classList.toggle('hidden');
+        toggleChat.classList.toggle('active');
+    });
+
     function check(name, sum) {
         document.getElementById("btn1").innerText == '' ? b1 = "a" : b1 = document.getElementById("btn1").innerText;
         document.getElementById("btn2").innerText == '' ? b2 = "b" : b2 = document.getElementById("btn2").innerText;
@@ -140,7 +176,7 @@
         if ((b1 == b2 && b2 == b3) || (b4 == b5 && b5 == b6) || (b7 == b8 && b8 == b9) || (b1 == b4 && b4 == b7) || (b2 == b5 && b5 == b8) || (b3 == b6 && b6 == b9) || (b1 == b5 && b5 == b9) || (b3 == b5 && b5 == b7)) {
             socket.emit("gameOver", { name: name })
             setTimeout(() => {
-                sum % 2 == 0 ? alert("X WON !!") : alert("O WON !!")
+                sum % 2 == 0 ? alert("X A GAGNÉ !!") : alert("O A GAGNÉ !!")
                 setTimeout(() => {
                     location.reload()
                 }, 2000)
@@ -150,7 +186,7 @@
         else if (sum == 10) {
             socket.emit("gameOver", { name: name })
             setTimeout(() => {
-                alert("DRAW!!")
+                alert("ÉGALITÉ!!")
                 setTimeout(() => {
                     location.reload()
                 }, 2000)

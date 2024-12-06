@@ -134,3 +134,78 @@ button[class^="btn"]:disabled {
     background-color: #f2f2f2;
     cursor: not-allowed;
 }
+
+.hidden {
+    display: none;
+}
+
+.chatCont {
+    position: absolute;
+    left: -35vw; /* Masqué par défaut */
+    top: 0;
+    width: 35vw;
+    height: 100%;
+    background-color: #f9f9f9;
+    border-right: 2px solid #000;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    transition: left 0.3s ease; /* Animation pour l'affichage et le masquage */
+}
+
+.chatCont.hidden {
+    left: -35vw; /* Masqué */
+}
+
+.chatCont:not(.hidden) {
+    left: 0; /* Affiché */
+}
+
+.chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.chatInput {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 10px;
+    border: 2px solid #000;
+    border-radius: 5px;
+}
+
+.sendChat {
+    padding: 10px;
+    font-size: 16px;
+    background-color: var(--main-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sendChat:hover {
+    background-color: var(--secondary-color);
+}
+
+.toggleChat {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    font-size: 16px;
+    background-color: transparent;
+    z-index: 10;
+    border: none;
+    rotate: 180deg;
+    cursor: pointer;
+    transition: rotate 0.3s ease;
+}
+
+.toggleChat.active {
+    rotate: 0deg;
+}
