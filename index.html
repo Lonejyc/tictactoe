@@ -7,7 +7,7 @@
     <title>Tic Tac Toe</title>
 </head>
 <body>
-    <h1>Tic Tac Toe</h1>
+    <h1>Tic <span class="redTxt">Tac</span> Toe</h1>
     <div class="usersCont">
         <p class="userCont">You : <span class="user"></span></p>
         <p class="oppCont">Opponent : <span class="opp"></span></p>
@@ -113,14 +113,14 @@
             document.getElementById(`${p1id}`).innerText = foundObject.p1.p1value;
             document.getElementById(`${p1id}`).disabled = true;
             document.getElementById(`${p1id}`).style.cursor = 'not-allowed';
-            document.getElementById(`${p1id}`).style.color = 'black';
+            document.getElementById(`${p1id}`).style.color = 'var(--main-color)';
         }
 
         if (p2id != '') {
             document.getElementById(`${p2id}`).innerText = foundObject.p2.p2value;
             document.getElementById(`${p2id}`).disabled = true;
             document.getElementById(`${p2id}`).style.cursor = 'not-allowed';
-            document.getElementById(`${p2id}`).style.color = 'black';
+            document.getElementById(`${p2id}`).style.color = 'var(--secondary-color)';
         }
 
         check(name, foundObject.sum);
