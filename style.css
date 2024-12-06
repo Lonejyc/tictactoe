@@ -141,9 +141,9 @@ button[class^="btn"]:disabled {
 
 .chatCont {
     position: absolute;
-    left: -35vw; /* Masqué par défaut */
+    left: -30vw; /* Masqué par défaut */
     top: 0;
-    width: 35vw;
+    width: 30vw;
     height: 100%;
     background-color: #f9f9f9;
     border-right: 2px solid #000;
@@ -154,7 +154,7 @@ button[class^="btn"]:disabled {
 }
 
 .chatCont.hidden {
-    left: -35vw; /* Masqué */
+    left: -30vw; /* Masqué */
 }
 
 .chatCont:not(.hidden) {
